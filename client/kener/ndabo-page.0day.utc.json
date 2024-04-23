@@ -1,0 +1,27 @@
+{
+  "1713868140": {
+    "status": "UP",
+    "latency": 32,
+    "type": "realtime"
+  },
+  "1713868200": {
+    "status": "UP",
+    "latency": 27,
+    "type": "realtime"
+  },
+  "1713868260": {
+    "status": "UP",
+    "latency": 81,
+    "type": "realtime"
+  },
+  "1713868320": {
+    "status": "UP",
+    "latency": 36,
+    "type": "realtime"
+  },
+  "1713868380": {
+    "status": "UP",
+    "latency": 29,
+    "type": "realtime"
+  }
+}

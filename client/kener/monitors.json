@@ -1,0 +1,17 @@
+[
+    {
+        "name": "NDABO page",
+        "description": "Narzędzia do automatyzacji budowy oprogramowania. <a href=\"https://ssynowiec.github.io/NDABO/\" class=\"font-medium underline underline-offset-4\" target=\"_blank\">https://ssynowiec.github.io/NDABO/</a>",
+        "tag": "NDABO-page",
+        "api": {
+            "method": "GET",
+            "url": "https://ssynowiec.github.io/NDABO/",
+            "eval": "(function (statusCode, responseTime, responseData) {\n\tlet statusCodeShort = Math.floor(statusCode/100);\n    if(statusCode == 429 || (statusCodeShort >=2 && statusCodeShort <= 3)) {\n        return {\n\t\t\tstatus: 'UP',\n\t\t\tlatency: responseTime,\n        }\n    } \n\treturn {\n\t\tstatus: 'DOWN',\n\t\tlatency: responseTime,\n\t}\n})",
+            "timeout": 10000
+        },
+        "folderName": "ndabo-page",
+        "path0Day": "./static/kener/ndabo-page.0day.utc.json",
+        "path90Day": "./static/kener/ndabo-page.90day.utc.json",
+        "hasAPI": true
+    }
+]
