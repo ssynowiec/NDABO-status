@@ -27,7 +27,9 @@
         "url": "https://github.com/rajnandan1/kener.git"
     },
     "scripts": {
+        "dev": "npm run kener:dev",
         "build": "node scripts/check.js && vite build",
+        "deploy": "gh-pages -d dist",
         "serve": "node prod.js",
         "kener:dev": "cross-env NODE_ENV=development PUBLIC_KENER_FOLDER=./static/kener node scripts/check.js && concurrently \"cross-env NODE_ENV=development PUBLIC_KENER_FOLDER=./static/kener node dev.js\" \"cross-env NODE_ENV=development PUBLIC_KENER_FOLDER=./static/kener vite dev\"",
         "kener:dev-monitor": "cross-env NODE_ENV=development PUBLIC_KENER_FOLDER=./static/kener  node dev.js",
