@@ -9,9 +9,9 @@ const config = {
 
   kit: {
     adapter: adapter(),
-    paths: {
-      base: process.env.NODE_ENV === 'production' ? '/NDABO-status' : '',
-    }
+    // paths: {
+    //   base: process.env.NODE_ENV === 'production' ? '/NDABO-status' : '',
+    // }
   }
 };
 
