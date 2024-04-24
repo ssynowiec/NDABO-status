@@ -16,3 +16,4 @@ nodemon.json
 .okgit/
 config/static/*
 !config/static/.kener
+/build

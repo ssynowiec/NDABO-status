@@ -1,6 +1,7 @@
 <script>
     import { Button } from "$lib/components/ui/button";
     import { buttonVariants } from "$lib/components/ui/button";
+    import { base } from '$app/paths';
     export let data;
 </script>
 <div class="one"></div>
@@ -19,7 +20,7 @@
 			{#if data.site.nav}
             <nav class="flex flex-wrap items-center space-x-6 text-sm font-medium">
                 {#each data.site.nav as navItem}
-                <a href="{navItem.url}"> {navItem.name} </a>
+                <a href="{base}/{navItem.url}"> {navItem.name} </a>
                 {/each}
             </nav>
 			{/if}
