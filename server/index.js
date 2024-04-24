@@ -1,7 +1,7 @@
-import { c as create_ssr_component, s as setContext, v as validate_component, m as missing_component } from './chunks/ssr-4803c1d8.js';
+import { c as create_ssr_component, s as setContext, v as validate_component, m as missing_component } from './chunks/ssr-f056b9d4.js';
 import { e as error, j as json, t as text, R as Redirect, N as NotFound, H as HttpError, A as ActionFailure } from './chunks/index-d7f43214.js';
-import { s as set_private_env, a as set_public_env, p as public_env, f as fix_stack_trace } from './chunks/shared-server-887a2f5e.js';
-import { w as writable, r as readable } from './chunks/index2-9a50040e.js';
+import { w as writable, r as readable } from './chunks/index2-ef0fcb8d.js';
+import { s as set_private_env, a as set_public_env, p as public_env } from './chunks/shared-server-58a5f352.js';
 
 let base = "";
 let assets = base;
@@ -171,13 +171,13 @@ const options = {
 		<div class="error">
 			<span class="status">` + status + '</span>\n			<div class="message">\n				<h1>' + message + "</h1>\n			</div>\n		</div>\n	</body>\n</html>\n"
   },
-  version_hash: "1nwshdc"
+  version_hash: "6v3fdn"
 };
 function get_hooks() {
   return {};
 }
 
-const DEV = true;
+const DEV = false;
 const SVELTE_KIT_ASSETS = "/_svelte_kit_assets";
 const ENDPOINT_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"];
 const PAGE_METHODS = ["GET", "POST", "HEAD"];
@@ -299,9 +299,6 @@ function allowed_methods(mod) {
 }
 function static_error_page(options2, status, message) {
   let page = options2.templates.error({ status, message });
-  {
-    page = page.replace("</head>", '<script type="module" src="/@vite/client"><\/script></head>');
-  }
   return text(page, {
     headers: { "content-type": "text/html; charset=utf-8" },
     status
@@ -363,12 +360,6 @@ function stringify_uses(node) {
   return `"uses":{${uses.join(",")}}`;
 }
 function warn_with_callsite(message, offset = 0) {
-  {
-    const stack = fix_stack_trace(new Error()).split("\n");
-    const line = stack.at(3 + offset);
-    message += `
-${line}`;
-  }
   console.warn(message);
 }
 async function render_endpoint(event, mod, state) {
@@ -1190,35 +1181,7 @@ function try_deserialize(data, fn, route_id) {
     throw error2;
   }
 }
-let warned = null;
 async function unwrap_promises(object, id) {
-  {
-    const promises = [];
-    for (const key2 in object) {
-      if (typeof object[key2]?.then === "function") {
-        promises.push(key2);
-      }
-    }
-    if (promises.length > 0) {
-      if (!warned)
-        warned = /* @__PURE__ */ new Set();
-      const last = promises.pop();
-      const properties = promises.length > 0 ? `${promises.map((p) => `"${p}"`).join(", ")} and "${last}" properties` : `"${last}" property`;
-      const location = id ? `the \`load\` function in ${id}` : "a `load` function";
-      const description = promises.length > 0 ? "are promises" : "is a promise";
-      const message = `The top-level ${properties} returned from ${location} ${description}.`;
-      if (!warned.has(message)) {
-        console.warn(
-          `
-${message}
-
-In SvelteKit 2.0, these will no longer be awaited automatically. To get rid of this warning, await all promises included as top-level properties in \`load\` return values.
-`
-        );
-        warned.add(message);
-      }
-    }
-  }
   for (const key2 in object) {
     if (typeof object[key2]?.then === "function") {
       return Object.fromEntries(
@@ -1227,14 +1190,6 @@ In SvelteKit 2.0, these will no longer be awaited automatically. To get rid of t
     }
   }
   return object;
-}
-function validate_depends(route_id, dep) {
-  const match = /^(moz-icon|view-source|jar):/.exec(dep);
-  if (match) {
-    console.warn(
-      `${route_id}: Calling \`depends('${dep}')\` will throw an error in Firefox because \`${match[1]}\` is a special URI scheme`
-    );
-  }
 }
 const INVALIDATED_PARAM = "x-sveltekit-invalidated";
 const TRAILING_SLASH_PARAM = "x-sveltekit-trailing-slash";
@@ -1248,7 +1203,6 @@ async function load_server_data({
 }) {
   if (!node?.server)
     return null;
-  let done = false;
   const uses = {
     dependencies: /* @__PURE__ */ new Set(),
     params: /* @__PURE__ */ new Set(),
@@ -1257,11 +1211,6 @@ async function load_server_data({
     url: false
   };
   const url = make_trackable(event.url, () => {
-    if (done && !uses.url) {
-      console.warn(
-        `${node.server_id}: Accessing URL properties in a promise handler after \`load(...)\` has returned will not cause the function to re-run when the URL changes`
-      );
-    }
     uses.url = true;
   });
   if (state.prerendering) {
@@ -1271,11 +1220,6 @@ async function load_server_data({
     ...event,
     fetch: (info, init2) => {
       const url2 = new URL(info instanceof Request ? info.url : info, event.url);
-      if (done && !uses.dependencies.has(url2.href)) {
-        console.warn(
-          `${node.server_id}: Calling \`event.fetch(...)\` in a promise handler after \`load(...)\` has returned will not cause the function to re-run when the dependency is invalidated`
-        );
-      }
       if (track_server_fetches) {
         uses.dependencies.add(url2.href);
       }
@@ -1285,26 +1229,11 @@ async function load_server_data({
     depends: (...deps) => {
       for (const dep of deps) {
         const { href } = new URL(dep, event.url);
-        {
-          validate_depends(node.server_id, dep);
-          if (done && !uses.dependencies.has(href)) {
-            console.warn(
-              `${node.server_id}: Calling \`depends(...)\` in a promise handler after \`load(...)\` has returned will not cause the function to re-run when the dependency is invalidated`
-            );
-          }
-        }
         uses.dependencies.add(href);
       }
     },
     params: new Proxy(event.params, {
       get: (target, key2) => {
-        if (done && typeof key2 === "string" && !uses.params.has(key2)) {
-          console.warn(
-            `${node.server_id}: Accessing \`params.${String(
-              key2
-            )}\` in a promise handler after \`load(...)\` has returned will not cause the function to re-run when the param changes`
-          );
-        }
         uses.params.add(key2);
         return target[
           /** @type {string} */
@@ -1313,23 +1242,11 @@ async function load_server_data({
       }
     }),
     parent: async () => {
-      if (done && !uses.parent) {
-        console.warn(
-          `${node.server_id}: Calling \`parent(...)\` in a promise handler after \`load(...)\` has returned will not cause the function to re-run when parent data changes`
-        );
-      }
       uses.parent = true;
       return parent();
     },
     route: new Proxy(event.route, {
       get: (target, key2) => {
-        if (done && typeof key2 === "string" && !uses.route) {
-          console.warn(
-            `${node.server_id}: Accessing \`route.${String(
-              key2
-            )}\` in a promise handler after \`load(...)\` has returned will not cause the function to re-run when the route changes`
-          );
-        }
         uses.route = true;
         return target[
           /** @type {'id'} */
@@ -1340,7 +1257,6 @@ async function load_server_data({
     url
   });
   const data = result ? await unwrap_promises(result, node.server_id) : null;
-  done = true;
   return {
     type: "data",
     data,
@@ -2229,21 +2145,6 @@ async function render_response({
   }) || "";
   if (!chunks) {
     headers.set("etag", `"${hash(transformed)}"`);
-  }
-  {
-    if (page_config.csr) {
-      if (transformed.split("<!--").length < html.split("<!--").length) {
-        console.warn(
-          "\x1B[1m\x1B[31mRemoving comments in transformPageChunk can break Svelte's hydration\x1B[39m\x1B[22m"
-        );
-      }
-    } else {
-      if (chunks) {
-        console.warn(
-          "\x1B[1m\x1B[31mReturning promises from server `load` functions will only work if `csr === true`\x1B[39m\x1B[22m"
-        );
-      }
-    }
   }
   return !chunks ? text(transformed, {
     status,
@@ -3430,41 +3331,6 @@ function normalize_fetch_input(info, init2, url) {
   }
   return new Request(typeof info === "string" ? new URL(info, url) : info, init2);
 }
-function validator(expected) {
-  function validate(module, file) {
-    if (!module)
-      return;
-    for (const key2 in module) {
-      if (key2[0] === "_" || expected.has(key2))
-        continue;
-      const values = [...expected.values()];
-      const hint = hint_for_supported_files(key2, file?.slice(file.lastIndexOf("."))) ?? `valid exports are ${values.join(", ")}, or anything with a '_' prefix`;
-      throw new Error(`Invalid export '${key2}'${file ? ` in ${file}` : ""} (${hint})`);
-    }
-  }
-  return validate;
-}
-function hint_for_supported_files(key2, ext = ".js") {
-  const supported_files = [];
-  if (valid_layout_exports.has(key2)) {
-    supported_files.push(`+layout${ext}`);
-  }
-  if (valid_page_exports.has(key2)) {
-    supported_files.push(`+page${ext}`);
-  }
-  if (valid_layout_server_exports.has(key2)) {
-    supported_files.push(`+layout.server${ext}`);
-  }
-  if (valid_page_server_exports.has(key2)) {
-    supported_files.push(`+page.server${ext}`);
-  }
-  if (valid_server_exports.has(key2)) {
-    supported_files.push(`+server${ext}`);
-  }
-  if (supported_files.length > 0) {
-    return `'${key2}' is a valid export in ${supported_files.slice(0, -1).join(", ")}${supported_files.length > 1 ? " or " : ""}${supported_files.at(-1)}`;
-  }
-}
 const valid_layout_exports = /* @__PURE__ */ new Set([
   "load",
   "prerender",
@@ -3473,28 +3339,9 @@ const valid_layout_exports = /* @__PURE__ */ new Set([
   "trailingSlash",
   "config"
 ]);
-const valid_page_exports = /* @__PURE__ */ new Set([...valid_layout_exports, "entries"]);
+/* @__PURE__ */ new Set([...valid_layout_exports, "entries"]);
 const valid_layout_server_exports = /* @__PURE__ */ new Set([...valid_layout_exports]);
-const valid_page_server_exports = /* @__PURE__ */ new Set([...valid_layout_server_exports, "actions", "entries"]);
-const valid_server_exports = /* @__PURE__ */ new Set([
-  "GET",
-  "POST",
-  "PATCH",
-  "PUT",
-  "DELETE",
-  "OPTIONS",
-  "HEAD",
-  "fallback",
-  "prerender",
-  "trailingSlash",
-  "config",
-  "entries"
-]);
-const validate_layout_exports = validator(valid_layout_exports);
-const validate_page_exports = validator(valid_page_exports);
-const validate_layout_server_exports = validator(valid_layout_server_exports);
-const validate_page_server_exports = validator(valid_page_server_exports);
-const validate_server_exports = validator(valid_server_exports);
+/* @__PURE__ */ new Set([...valid_layout_server_exports, "actions", "entries"]);
 const default_transform = ({ html }) => html;
 const default_filter = () => false;
 const default_preload = ({ type }) => type === "js" || type === "css";
@@ -3605,47 +3452,14 @@ async function respond(request, options2, manifest, state) {
           ...route.page.layouts.map((n) => n == void 0 ? n : manifest._.nodes[n]()),
           manifest._.nodes[route.page.leaf]()
         ]);
-        if (DEV) {
-          const layouts = nodes.slice(0, -1);
-          const page = nodes.at(-1);
-          for (const layout of layouts) {
-            if (layout) {
-              validate_layout_server_exports(
-                layout.server,
-                /** @type {string} */
-                layout.server_id
-              );
-              validate_layout_exports(
-                layout.universal,
-                /** @type {string} */
-                layout.universal_id
-              );
-            }
-          }
-          if (page) {
-            validate_page_server_exports(
-              page.server,
-              /** @type {string} */
-              page.server_id
-            );
-            validate_page_exports(
-              page.universal,
-              /** @type {string} */
-              page.universal_id
-            );
-          }
-        }
+        if (DEV)
+          ;
         trailing_slash = get_option(nodes, "trailingSlash");
       } else if (route.endpoint) {
         const node = await route.endpoint();
         trailing_slash = node.trailingSlash;
-        if (DEV) {
-          validate_server_exports(
-            node,
-            /** @type {string} */
-            route.endpoint_id
-          );
-        }
+        if (DEV)
+          ;
       }
       if (!is_data_request) {
         const normalized = normalize_path(url.pathname, trailing_slash ?? "never");
@@ -3927,13 +3741,7 @@ class Server {
         };
       } catch (error2) {
         {
-          this.#options.hooks = {
-            handle: () => {
-              throw error2;
-            },
-            handleError: ({ error: error3 }) => console.error(error3),
-            handleFetch: ({ request, fetch: fetch2 }) => fetch2(request)
-          };
+          throw error2;
         }
       }
     }
