@@ -1,0 +1,12 @@
+{
+  "1713867960": {
+    "status": "UP",
+    "latency": 413,
+    "type": "realtime"
+  },
+  "1713868020": {
+    "status": "UP",
+    "latency": 516,
+    "type": "realtime"
+  }
+}

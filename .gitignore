@@ -1,6 +1,5 @@
 .DS_Store
 node_modules
-static/kener
 build/client/kener
 config/monitors.yaml
 config/site.yaml
